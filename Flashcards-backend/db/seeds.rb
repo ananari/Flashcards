@@ -5,7 +5,10 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
 ananari = User.create(username: "ananari", email: "ana@ana.com")
 hemesh = User.create(username: "hemesh", email: "hemesh@hemesh.com")
 
@@ -15,6 +18,7 @@ cars = Deck.create(name: "Cars", user_id: hemesh.id)
 planes = Deck.create(name: "Planes", user_id: hemesh.id)
 
 card1 = Card.create(front: "woman", back: "kobieta", deck_id: polish.id)
+<<<<<<< HEAD
 card2 = Card.create(front: "zeszyt", back: "notebook", deck_id: polish.id)
 card3 = Card.create(front: "water", back: "vesi", deck_id: finnish.id)
 card4 = Card.create(front: "bridge", back: "silta", deck_id: finnish.id)
@@ -22,3 +26,14 @@ card5 = Card.create(front: "subaru", back: "impreza", deck_id: cars.id)
 card6 = Card.create(front: "lambo", back: "huracan", deck_id: cars.id)
 card7 = Card.create(front: "boeing", back: "777", deck_id: planes.id)
 card8 = Card.create(front: "airbus", back: "320", deck_id: planes.id)
+=======
+card2 = Card.create(front: "notebook", back: "zeszyt", deck_id: polish.id)
+card3 = Card.create(front: "flower", back: "kwiat", deck_id: polish.id)
+card4 = Card.create(front: "pencil", back: "ołówek", deck_id: polish.id)
+card5 = Card.create(front: "water", back: "vesi", deck_id: finnish.id)
+card6 = Card.create(front: "bridge", back: "silta", deck_id: finnish.id)
+card7 = Card.create(front: "subaru", back: "impreza", deck_id: cars.id)
+card8 = Card.create(front: "lambo", back: "huracan", deck_id: cars.id)
+card9 = Card.create(front: "boeing", back: "777", deck_id: planes.id)
+card10 = Card.create(front: "airbus", back: "320", deck_id: planes.id)
+>>>>>>> origin/master
