@@ -15,7 +15,6 @@ function fetchDecks() {
     fetch(decksURL)
         .then(response => response.json() )
         .then(deckData => {
-            clearEverything
             myDecksButton(deckData);
         })
 }
