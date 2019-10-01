@@ -6,10 +6,71 @@ const myDecksWindow = document.getElementById('my-decks-window');
 const deckWindow = document.getElementById('deck-window')
 const cardWindow = document.querySelector('#card-window');
 const cardDiv = document.querySelector('#cards');
+const signUp = document.querySelector('#sign-up');
+const loginForm = document.querySelector('#login-form');
+const check = document.querySelector('#check');
 const cardsURL = "http://localhost:3000/cards";
 const decksURL = `http://localhost:3000/decks`;
+const sessionsURL = "http://localhost:3000/sessions";
 const deckURL = id => `http://localhost:3000/decks/${id}`;
 const cardURL = id => `http://localhost:3000/cards/${id}`;
+
+
+
+signUp.addEventListener('click', function(event){
+    event.preventDefault();
+    console.log('im clik');
+    clearDeckWindow();
+    clearCardDiv();
+    clearCardWindow();
+    clearLoginForm();
+    let form = document.createElement('form');
+    let usernamelabel = document.createElement('p');
+    usernamelabel.innerText = "Username:"
+    let usernameinput = document.createElement('input');
+    usernameinput.setAttribute('type', 'text');
+    // let emaillabel = document.createElement('p');
+    // emaillabel.innerText = "Back side:"
+    // let emailinput = document.createElement('input');
+    // emailinput.setAttribute('type', 'text');
+    let submit = document.createElement('input');
+    submit.setAttribute('type', 'submit');
+    form.appendChild(usernamelabel);
+    form.appendChild(usernameinput);
+    // form.appendChild(emaillabel);
+    // form.appendChild(emailinput);
+    form.appendChild(submit);
+    loginForm.appendChild(form);
+    submit.addEventListener('click', function(event){
+        event.preventDefault();
+        postdata = {username: usernameinput.value}
+        postconfig = {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "accept": "application/json"
+            },
+            body: JSON.stringify(postdata)
+        }
+        fetch(sessionsURL, postconfig)
+        .then(res => res.json())
+        .then(function(json){
+            Cookies.set('username', json.username);
+        })
+        .catch(error => console.log(error));
+    })
+    
+})
+
+
+
+check.addEventListener('click', function(){
+    // fetch(sessionsURL)
+    // .then(res => res.json())
+    // .then(json => console.log(json))
+    // .catch(error => console.log(error));
+    console.log(Cookies.get());
+})
 
 //add event listener for click
 myDecksButton.addEventListener('click', (event) => {
@@ -24,7 +85,7 @@ function fetchDecks() {
         .then(deckData => {
             loadDecks(deckData);
         })
-};
+}
 
 function loadDecks(deckData) {
     //display decks banner
@@ -353,11 +414,18 @@ function clearCardDiv() {
     }
 }
 
+function clearLoginForm() {
+    while (loginForm.hasChildNodes() ) {  
+        loginForm.removeChild(loginForm.firstChild);
+    }
+}
+
 function clearEverything() {
     clearMyDecksWindow();
     clearDeckWindow();
     clearCardWindow();
     clearCardDiv();
+    clearLoginForm();
 }
 
 //*******************************CARD FUNCTIONS********************************
