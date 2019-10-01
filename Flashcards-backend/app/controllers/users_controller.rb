@@ -8,6 +8,18 @@ class UsersController < ApplicationController
         user = set_user
         render json: user
     end
+    
+    def new
+    end
+
+    def create
+    end
+
+    def edit
+    end
+
+    def update
+    end
 
     def set_user
         user = User.find(params[:id])
