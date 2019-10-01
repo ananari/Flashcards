@@ -1,10 +1,9 @@
 //Global Constants
 const deckNavigation = document.getElementById('deck-navigation');
 const navigationBar = document.getElementById('navigation-bar');
-const myDecksDropdown = document.getElementById('my-decks-dropdown');
 const myDecksButton = document.getElementById('my-decks-button')
-const sharedDecksDropdown = document.getElementById('shared-decks-dropdown')
-const deckWindow = document.getElementById('deck-window');
+const myDecksWindow = document.getElementById('my-decks-window');
+const deckWindow = document.getElementById('deck-window')
 const cardWindow = document.querySelector('#card-window');
 const cardDiv = document.querySelector('#cards');
 const cardsURL = "http://localhost:3000/cards";
@@ -14,7 +13,7 @@ const cardURL = id => `http://localhost:3000/cards/${id}`;
 
 //add event listener for click
 myDecksButton.addEventListener('click', (event) => {
-    console.log("'My Decks' button has been clicked via ", event);
+    //console.log("'My Decks' button has been clicked via ", event);
     clearEverything();
     fetchDecks();
 });
@@ -31,17 +30,17 @@ function loadDecks(deckData) {
     //display decks banner
     const myDecksBanner = document.createElement('h1')
     myDecksBanner.innerText = `These are all the decks you've created!`;
-    deckWindow.appendChild(myDecksBanner);
+    myDecksWindow.appendChild(myDecksBanner);
 
     //create a "New Deck" button
-    const newDeck = document.createElement('h2');
-    newDeck.innerText = 'Create a New Deck: '
+    const newDeck = document.createElement('h3');
+    newDeck.innerText = 'Create a New Deck with '
     const newDeckButton = document.createElement('button');
-    newDeckButton.innerText = `New Deck`;
+    newDeckButton.innerText = `Magic`;
     newDeck.appendChild(newDeckButton);
     
-    //append to Deck window
-    deckWindow.appendChild(newDeck);
+    //append to mydecksWindow
+    myDecksWindow.appendChild(newDeck);
 
     //add event listener for click
     newDeckButton.addEventListener('click', (event) => {
@@ -50,8 +49,8 @@ function loadDecks(deckData) {
         createDeckForm();
     })
 
-    //displays each deck with delete button on main window
-    displayDecks(deckData);
+    //bootstrap displaydecks into cards
+    displayDecks2(deckData)
 }
 
 function displayDecks(deckData) {
@@ -100,11 +99,71 @@ function displayDecks(deckData) {
     }
 }
 
+function displayDecks2(deckData) {
+    for (const deck of deckData) {
+        //console.log("deck name = ", deck)
+        
+        //create deck div
+        const newDiv = document.createElement('div');
+        newDiv.classList.add("deck");
+        deckWindow.appendChild(newDiv);
+        
+        //add deck name
+        const deckName = document.createElement('h3');
+        deckName.innerText = `${deck.name}`;
+        newDiv.appendChild(deckName);
+
+        //add # of cards
+        const deckCards = document.createElement('h4');
+        deckCards.innerText = `(contains ${deck.cards.length} cards)`;
+        newDiv.appendChild(deckCards);
+        
+        //study deck button
+        const studyDeckButton = document.createElement('button');
+        studyDeckButton.innerText = '  Study!  ';
+        studyDeckButton.style.backgroundColor = "lightgreen"
+        newDiv.appendChild(studyDeckButton);
+        studyDeckButton.addEventListener('click', (event) => {
+            console.log('study button has been pushed');
+            clearEverything();
+            displayDeck(deck.id);
+        });
+
+        //edit deck button
+        const editDeckButton = document.createElement('button');
+        editDeckButton.innerText = '  Edit  ';
+        editDeckButton.style.backgroundColor = "lightgoldenrodyellow"
+        newDiv.appendChild(editDeckButton);
+        editDeckButton.addEventListener('click', (event) => {
+            console.log('edit button has been pushed');
+            clearEverything();
+            editDeckForm(deck);
+        });
+
+        //delete deck button
+        const deleteDeckButton = document.createElement('button');
+        deleteDeckButton.innerText = '  Delete  ';
+        deleteDeckButton.style.backgroundColor = "lightcoral"
+        newDiv.appendChild(deleteDeckButton);
+        deleteDeckButton.addEventListener('click', (event) => {
+            console.log('delete button has been pushed');
+            let result = confirm("Are you sure? You won't be able to undo this!")
+            if(result) {
+                clearEverything();
+                deleteDeck(deck);
+            }
+        });
+
+        //append to main window area
+        deckWindow.appendChild(newDiv);
+    }
+}
+
 function createDeckForm() {
     //form title
     const formTitle = document.createElement('h3');
     formTitle.innerText = 'Create a new deck:';
-    deckWindow.appendChild(formTitle);
+    myDecksWindow.appendChild(formTitle);
     
     //create Form for new deck
     const newDeckForm = document.createElement('form');
@@ -276,6 +335,12 @@ function clearDeckWindow() {
     }
 }
 
+function clearMyDecksWindow() {
+    while (myDecksWindow.hasChildNodes() ) {  
+        myDecksWindow.removeChild(myDecksWindow.firstChild);
+    }
+}
+
 function clearCardWindow() {
     while (cardWindow.hasChildNodes() ) {  
         cardWindow.removeChild(cardWindow.firstChild);
@@ -289,8 +354,9 @@ function clearCardDiv() {
 }
 
 function clearEverything() {
-    clearCardWindow();
+    clearMyDecksWindow();
     clearDeckWindow();
+    clearCardWindow();
     clearCardDiv();
 }
 
@@ -300,145 +366,198 @@ function displayDeck(deckId){
     fetch(deckURL(deckId))
     .then(res => res.json())
     .then(function(json){
-        let card_index = 0;
-        let shuffled = shuffleCards(json.cards);
-        displayCard(shuffled[card_index]); 
-        let next = document.createElement('button');
-        let newCard = document.createElement('button');
-        let editCard = document.createElement('button');
-        let deleteCard = document.createElement('button');
-        next.innerText = 'Next';
-        newCard.innerText = "New card";
-        editCard.innerText = "Edit card";
-        deleteCard.innerText = "Delete card"; 
-        cardWindow.appendChild(next);
-        cardWindow.appendChild(newCard);
-        cardWindow.appendChild(editCard);
-        cardWindow.appendChild(deleteCard);
-        
-        next.addEventListener('click', function(){
-            if((card_index < shuffled.length - 1)){
-                cardDiv.innerHTML = "";
-                displayCard(shuffled[++card_index]);
-            }
-            else{
-                alert('You have reached the end of your cards!');
-            }
-            let forms = cardWindow.querySelectorAll('form');
-            if(forms){
-                for(const form of forms){
-                    cardWindow.removeChild(form);
-                }
-            }
-        })
-        newCard.addEventListener('click', function(){
-            let form = document.createElement('form');
-            let frontlabel = document.createElement('p');
-            frontlabel.innerText = "Front side:"
-            let frontinput = document.createElement('input');
-            frontinput.setAttribute('type', 'text');
-            let backlabel = document.createElement('p');
-            backlabel.innerText = "Back side:"
-            let backinput = document.createElement('input');
-            backinput.setAttribute('type', 'text');
-            let submit = document.createElement('input');
-            submit.setAttribute('type', 'submit');
-            form.appendChild(frontlabel);
-            form.appendChild(frontinput);
-            form.appendChild(backlabel);
-            form.appendChild(backinput);
-            form.appendChild(submit);
-            cardWindow.appendChild(form);
-            submit.addEventListener('click', function(event){
-                event.preventDefault();  
-                let postdata = {                
-                    front: frontinput.value,
-                    back: backinput.value,
-                    deck_id: deckId
-                }
-                // shuffled.push(postdata);
-                let postconfig = {
-                    method: "POST",
-                    headers: {
-                        "content-type": "application/json",
-                        "accept": "application/json"
-                    },
-                    body: JSON.stringify(postdata)
-                }
-                fetch(cardsURL, postconfig)
-                .then(res => res.json())
-                .then(function(json){
-                    shuffled.push(json); 
-                })
-                .catch(error => console.log(error));
-                
-            })
-
-
-        })
-        editCard.addEventListener('click', function(){
-            let form = document.createElement('form');
-            let frontlabel = document.createElement('p');
-            frontlabel.innerText = "Front side:"
-            let frontinput = document.createElement('input');
-            frontinput.setAttribute('type', 'text');
-            frontinput.setAttribute('value', shuffled[card_index].front)
-            let backlabel = document.createElement('p');
-            backlabel.innerText = "Back side:"
-            let backinput = document.createElement('input');
-            backinput.setAttribute('type', 'text');
-            backinput.setAttribute('value', shuffled[card_index].back)
-            let submit = document.createElement('input');
-            submit.setAttribute('type', 'submit');
-            form.appendChild(frontlabel);
-            form.appendChild(frontinput);
-            form.appendChild(backlabel);
-            form.appendChild(backinput);
-            form.appendChild(submit);
-            cardWindow.appendChild(form);
-            submit.addEventListener('click', function(event){
-                event.preventDefault();  
-                let patchdata = {                
-                    front: frontinput.value,
-                    back: backinput.value,
-                    deck_id: deckId
-                }
-                // shuffled.push(postdata);
-                let patchconfig = {
-                    method: "PATCH",
-                    headers: {
-                        "content-type": "application/json",
-                        "accept": "application/json"
-                    },
-                    body: JSON.stringify(patchdata)
-                }
-                fetch(cardURL(shuffled[card_index].id), patchconfig)
-                .then(res => res.json())
-                .then(function(json){
-                    shuffled[card_index] = json; 
-                    clearCardDiv();
-                    displayCard(shuffled[card_index]);
-                })
-                .catch(error => console.log(error));
-                
-            })
+        if(!(json.cards.length === 0)){
+            let card_index = 0;
+            let shuffled = shuffleCards(json.cards);
+            displayCard(shuffled[card_index]); 
+            let next = document.createElement('button');
+            let newCard = document.createElement('button');
+            let editCard = document.createElement('button');
+            let deleteCard = document.createElement('button');
+            next.innerText = 'Next';
+            newCard.innerText = "New card";
+            editCard.innerText = "Edit card";
+            deleteCard.innerText = "Delete card"; 
+            cardWindow.appendChild(next);
+            cardWindow.appendChild(newCard);
+            cardWindow.appendChild(editCard);
+            cardWindow.appendChild(deleteCard);
             
-        })
-        deleteCard.addEventListener('click', function(){
-            let result = confirm("Are you sure? You won't be able to undo this!")
-            if(result){
-                let delconfig = {
-                    method: "DELETE",
-                    headers: {
-                        "content-type": "application/json",
-                        "accept": "application/json"
+            next.addEventListener('click', function(){
+                if((card_index < shuffled.length - 1)){
+                    cardDiv.innerHTML = "";
+                    displayCard(shuffled[++card_index]);
+                }
+                else{
+                    alert('You have reached the end of your cards!');
+                }
+                let forms = cardWindow.querySelectorAll('form');
+                if(forms){
+                    for(const form of forms){
+                        cardWindow.removeChild(form);
                     }
                 }
-                fetch(cardURL(shuffled[card_index].id), delconfig)
-                .catch(error => console.log(error));
+            })
+            newCard.addEventListener('click', function(){
+                let form = document.createElement('form');
+                let frontlabel = document.createElement('p');
+                frontlabel.innerText = "Front side:"
+                let frontinput = document.createElement('input');
+                frontinput.setAttribute('type', 'text');
+                let backlabel = document.createElement('p');
+                backlabel.innerText = "Back side:"
+                let backinput = document.createElement('input');
+                backinput.setAttribute('type', 'text');
+                let submit = document.createElement('input');
+                submit.setAttribute('type', 'submit');
+                form.appendChild(frontlabel);
+                form.appendChild(frontinput);
+                form.appendChild(backlabel);
+                form.appendChild(backinput);
+                form.appendChild(submit);
+                cardWindow.appendChild(form);
+                submit.addEventListener('click', function(event){
+                    event.preventDefault();  
+                    let postdata = {                
+                        front: frontinput.value,
+                        back: backinput.value,
+                        deck_id: deckId
+                    }
+                    // shuffled.push(postdata);
+                    let postconfig = {
+                        method: "POST",
+                        headers: {
+                            "content-type": "application/json",
+                            "accept": "application/json"
+                        },
+                        body: JSON.stringify(postdata)
+                    }
+                    fetch(cardsURL, postconfig)
+                    .then(res => res.json())
+                    .then(function(json){
+                        shuffled.push(json); 
+                    })
+                    .catch(error => console.log(error));
+                    
+                })
+
+
+            })
+            editCard.addEventListener('click', function(){
+                let form = document.createElement('form');
+                let frontlabel = document.createElement('p');
+                frontlabel.innerText = "Front side:"
+                let frontinput = document.createElement('input');
+                frontinput.setAttribute('type', 'text');
+                frontinput.setAttribute('value', shuffled[card_index].front)
+                let backlabel = document.createElement('p');
+                backlabel.innerText = "Back side:"
+                let backinput = document.createElement('input');
+                backinput.setAttribute('type', 'text');
+                backinput.setAttribute('value', shuffled[card_index].back)
+                let submit = document.createElement('input');
+                submit.setAttribute('type', 'submit');
+                form.appendChild(frontlabel);
+                form.appendChild(frontinput);
+                form.appendChild(backlabel);
+                form.appendChild(backinput);
+                form.appendChild(submit);
+                cardWindow.appendChild(form);
+                submit.addEventListener('click', function(event){
+                    event.preventDefault();  
+                    let patchdata = {                
+                        front: frontinput.value,
+                        back: backinput.value,
+                        deck_id: deckId
+                    }
+                    // shuffled.push(postdata);
+                    let patchconfig = {
+                        method: "PATCH",
+                        headers: {
+                            "content-type": "application/json",
+                            "accept": "application/json"
+                        },
+                        body: JSON.stringify(patchdata)
+                    }
+                    fetch(cardURL(shuffled[card_index].id), patchconfig)
+                    .then(res => res.json())
+                    .then(function(json){
+                        shuffled[card_index] = json; 
+                        clearCardDiv();
+                        displayCard(shuffled[card_index]);
+                    })
+                    .catch(error => console.log(error));
+                    
+                })
                 
-            }
-        })
+            })
+            deleteCard.addEventListener('click', function(){
+                let result = confirm("Are you sure? You won't be able to undo this!")
+                if(result){
+                    let delconfig = {
+                        method: "DELETE",
+                        headers: {
+                            "content-type": "application/json",
+                            "accept": "application/json"
+                        }
+                    }
+                    fetch(cardURL(shuffled[card_index].id), delconfig)
+                    .catch(error => console.log(error));
+                    
+                }
+            })
+        }
+        else{
+            let shuffled = json.cards;
+            let newCard = document.createElement('button');
+            newCard.innerText = "New card";
+            cardWindow.appendChild(newCard);
+            newCard.addEventListener('click', function(){
+                let form = document.createElement('form');
+                let frontlabel = document.createElement('p');
+                frontlabel.innerText = "Front side:"
+                let frontinput = document.createElement('input');
+                frontinput.setAttribute('type', 'text');
+                let backlabel = document.createElement('p');
+                backlabel.innerText = "Back side:"
+                let backinput = document.createElement('input');
+                backinput.setAttribute('type', 'text');
+                let submit = document.createElement('input');
+                submit.setAttribute('type', 'submit');
+                form.appendChild(frontlabel);
+                form.appendChild(frontinput);
+                form.appendChild(backlabel);
+                form.appendChild(backinput);
+                form.appendChild(submit);
+                cardWindow.appendChild(form);
+                submit.addEventListener('click', function(event){
+                    event.preventDefault();  
+                    let postdata = {                
+                        front: frontinput.value,
+                        back: backinput.value,
+                        deck_id: deckId
+                    }
+                    // shuffled.push(postdata);
+                    let postconfig = {
+                        method: "POST",
+                        headers: {
+                            "content-type": "application/json",
+                            "accept": "application/json"
+                        },
+                        body: JSON.stringify(postdata)
+                    }
+                    fetch(cardsURL, postconfig)
+                    .then(res => res.json())
+                    .then(function(json){
+                        shuffled.push(json); 
+                    })
+                    .catch(error => console.log(error));
+                    
+                })
+
+
+            })
+        }
     })
     .catch(error => console.log(error));
 }
