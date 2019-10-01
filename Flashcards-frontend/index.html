@@ -4,10 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <title>Document</title>
 </head>
 <body>
-  <nav id="navigation-bar"></nav>
+  <nav id="navigation-bar" class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">FlashCards</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Home</a></li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">My Decks
+          <span class="caret"></span></a>
+          <ul id="my-decks-dropdown" class="dropdown-menu">
+            <!-- PLACEHOLDER FOR MY DECKS DROPDOWN-->
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Shared Decks
+          <span class="caret"></span></a>
+          <ul id="shared-decks-dropdown" class="dropdown-menu">
+            <!-- PLACEHOLDER FOR SHARED DECKS DROPDOWN-->
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
   <div id="deck-window">
     <ul id="decks" >
       <!-- PLACEHOLDER FOR DECKS -->
