@@ -87,25 +87,6 @@ function fetchDecks() {
         })
 }
 
-function myDecksButton(deckData) {
-    //create button for "My Decks"
-    const myDecksButton = document.createElement('button');
-    myDecksButton.innerText = 'My Decks';
-    
-    //append to Deck Nevigation nav tag
-    navigationBar.appendChild(myDecksButton);
-    
-    //add event listener for click
-    myDecksButton.addEventListener('click', (event) => {
-        console.log("'My Decks' button has been clicked");
-        clearDeckWindow();
-        clearCardWindow();
-        clearCardDiv();
-        clearLoginForm();
-        loadDecks(deckData);
-    });
-};
-
 function loadDecks(deckData) {
     //display decks banner
     const myDecksBanner = document.createElement('h1')
