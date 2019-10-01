@@ -2,6 +2,7 @@
 const deckNavigation = document.getElementById('deck-navigation');
 const navigationBar = document.getElementById('navigation-bar');
 const myDecksDropdown = document.getElementById('my-decks-dropdown');
+const myDecksButton = document.getElementById('my-decks-button')
 const sharedDecksDropdown = document.getElementById('shared-decks-dropdown')
 const deckWindow = document.getElementById('deck-window');
 const cardWindow = document.querySelector('#card-window');
@@ -11,30 +12,19 @@ const decksURL = `http://localhost:3000/decks`;
 const deckURL = id => `http://localhost:3000/decks/${id}`;
 const cardURL = id => `http://localhost:3000/cards/${id}`;
 
+//add event listener for click
+myDecksButton.addEventListener('click', (event) => {
+    console.log("'My Decks' button has been clicked via ", event);
+    clearEverything();
+    fetchDecks();
+});
+
 function fetchDecks() {
     fetch(decksURL)
         .then(response => response.json() )
         .then(deckData => {
-            myDecksButton(deckData);
+            loadDecks(deckData);
         })
-}
-
-function myDecksButton(deckData) {
-    //create button for "My Decks"
-    const myDecksButton = document.createElement('button');
-    myDecksButton.innerText = 'My Decks';
-    
-    //append to Deck Nevigation nav tag
-    navigationBar.appendChild(myDecksButton);
-    
-    //add event listener for click
-    myDecksButton.addEventListener('click', (event) => {
-        console.log("'My Decks' button has been clicked");
-        clearDeckWindow();
-        clearCardWindow();
-        clearCardDiv();
-        loadDecks(deckData);
-    });
 };
 
 function loadDecks(deckData) {
@@ -44,26 +34,24 @@ function loadDecks(deckData) {
     deckWindow.appendChild(myDecksBanner);
 
     //create a "New Deck" button
-    const p = document.createElement('p');
-    p.innerText = 'Create a New Deck: '
+    const newDeck = document.createElement('h2');
+    newDeck.innerText = 'Create a New Deck: '
     const newDeckButton = document.createElement('button');
     newDeckButton.innerText = `New Deck`;
-    p.appendChild(newDeckButton);
+    newDeck.appendChild(newDeckButton);
     
     //append to Deck window
-    deckWindow.appendChild(p);
+    deckWindow.appendChild(newDeck);
 
     //add event listener for click
     newDeckButton.addEventListener('click', (event) => {
         console.log("'New Deck' button has been clicked");
-        clearDeckWindow();
-        clearCardWindow();
-        clearCardDiv();
+        clearEverything();
         createDeckForm();
     })
 
     //displays each deck with delete button on main window
-    displayDecks(deckData)
+    displayDecks(deckData);
 }
 
 function displayDecks(deckData) {
@@ -90,8 +78,8 @@ function displayDecks(deckData) {
         li.appendChild(editDeckButton);
         editDeckButton.addEventListener('click', (event) => {
             console.log('edit button has been pushed');
-            
-            //  PLACEDHOLDER FOR DISPLAYDECK FUNCTION
+            clearDeckWindow();
+            editDeckForm(deck);
         });
 
         //delete deck button
@@ -100,8 +88,11 @@ function displayDecks(deckData) {
         li.appendChild(deleteDeckButton);
         deleteDeckButton.addEventListener('click', (event) => {
             console.log('delete button has been pushed');
-            clearDeckWindow();
-            deleteDeck(deck.id);
+            let result = confirm("Are you sure? You won't be able to undo this!")
+            if(result) {
+                clearDeckWindow();
+                deleteDeck(deck);
+            }
         });
 
         //append to main window area
@@ -110,6 +101,11 @@ function displayDecks(deckData) {
 }
 
 function createDeckForm() {
+    //form title
+    const formTitle = document.createElement('h3');
+    formTitle.innerText = 'Create a new deck:';
+    deckWindow.appendChild(formTitle);
+    
     //create Form for new deck
     const newDeckForm = document.createElement('form');
     
@@ -121,6 +117,7 @@ function createDeckForm() {
     //value of name input box
     const newDeckNameInput = document.createElement('input');
     newDeckNameInput.setAttribute('type', 'text');
+    newDeckNameInput.setAttribute('placeholder', 'Enter deck name');
     newDeckForm.appendChild(newDeckNameInput);
 
     //label of user input box
@@ -131,11 +128,12 @@ function createDeckForm() {
     //value of label input box
     const newDeckUserInput = document.createElement('input');
     newDeckUserInput.setAttribute('type', 'number');
+    newDeckUserInput.setAttribute('placeholder', 'Enter user id');
     newDeckForm.appendChild(newDeckUserInput);
 
     //submit button
     const newDeckSubmitButton = document.createElement('input');
-    newDeckSubmitButton.setAttribute('type', 'Submit')
+    newDeckSubmitButton.setAttribute('type', 'Submit');
     newDeckForm.appendChild(newDeckSubmitButton);
 
     deckWindow.appendChild(newDeckForm);
@@ -147,18 +145,64 @@ function createDeckForm() {
             //console.log("New Deck Name Value = ", newDeckNameValue);
         newDeckUserValue = newDeckUserInput.value;
             //console.log("New User Name Value = ", newDeckUserValue);
-        clearDeckWindow();
-        clearCardWindow();
-        clearCardDiv();
-        createNewDeck(newDeckNameValue, newDeckUserValue);
+        clearEverything();
+        createDeck(newDeckNameValue, newDeckUserValue);
     })
 }
 
-function createNewDeck(newDeckNameValue, newDeckUserValue) {
+function editDeckForm(deck) {
+    //form title
+    const formTitle = document.createElement('h3');
+    formTitle.innerText = `Edit the ${deck.name} deck: `;
+    deckWindow.appendChild(formTitle);
+
+    //create form for editing name of deck
+    const editDeckForm = document.createElement('form');
+    
+    //label of name input box
+    const editDeckNameLabel = document.createElement('p');
+    editDeckNameLabel.innerText = "Rename deck to: ";
+    editDeckForm.appendChild(editDeckNameLabel);
+
+    //value of name input box
+    const editDeckNameInput = document.createElement('input');
+    editDeckNameInput.setAttribute('type', 'text');
+    editDeckForm.appendChild(editDeckNameInput);
+
+    //label of user input box
+    const editDeckUserLabel = document.createElement('p');
+    editDeckUserLabel.innerText = "User of new deck: ";
+    editDeckForm.appendChild(editDeckUserLabel);
+
+    //value of label input box
+    const editDeckUserInput = document.createElement('input');
+    editDeckUserInput.setAttribute('type', 'number');
+    editDeckForm.appendChild(editDeckUserInput);
+
+    //submit button
+    const editDeckSubmitButton = document.createElement('input');
+    editDeckSubmitButton.setAttribute('type', 'Submit');
+    editDeckForm.appendChild(editDeckSubmitButton);
+
+    deckWindow.appendChild(editDeckForm);
+
+    //add event listener and action for submit button
+    editDeckSubmitButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        editDeckNameValue = editDeckNameInput.value;
+            //console.log("New Deck Name Value = ", editDeckNameValue);
+        editDeckUserValue = editDeckUserInput.value;
+            //console.log("New Deck Name Value = ", editDeckNameValue);
+        clearEverything();
+        editDeck(deck, editDeckNameValue, editDeckUserValue);
+    });
+}
+
+function createDeck(newDeckNameValue, newDeckUserValue) {
     let newDeckData = {
         name: newDeckNameValue,
         user_id: newDeckUserValue
-    }
+    };
 
     let newDeckObject = {
         method: 'POST',
@@ -167,44 +211,68 @@ function createNewDeck(newDeckNameValue, newDeckUserValue) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(newDeckData)
-    }
+    };
 
     fetch(decksURL, newDeckObject)
         .then(response => response.json() )
         .then( (deckData) => {
-            loadDecks(deckData);
+            fetchDecks(deckData);
         })
         .catch(error => console.log(error));
 }
 
-function deleteDeck(deckID) {
-    let deleteURL = `http://localhost:3000/decks/` + deckID;
+function deleteDeck(deck) {
+    let deleteDeckURL = `http://localhost:3000/decks/` + deck.id;
 
-    let deleteObject = {
+    let deleteDeckObject = {
         method: 'DELETE',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
-    }
-
-    fetch(deleteURL, deleteObject)
+    };
+    
+    fetch(deleteDeckURL, deleteDeckObject)
     .then(response => response.json() )
     .then( (deckData) => {
-        loadDecks(deckData);
+        fetchDecks(deckData);
     })
     .catch(error => console.log(error));
 }
 
+function editDeck(deck, editDeckNameValue, editDeckUserValue) {
+    let editDeckURL = `http://localhost:3000/decks/` + deck.id;
+        console.log("editDeckURL = ", editDeckURL)
+    
+    let editDeckData = {
+        name: editDeckNameValue,
+        user_id: editDeckUserValue
+    };
+
+    let editDeckObject = {
+        method: 'PATCH',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(editDeckData)
+    };
+
+    fetch(editDeckURL, editDeckObject)
+        .then(response => response.json() )
+        .then( (deckData) => {
+            console.log("response from edit deck fxn: ",deckData)
+            fetchDecks(deckData);
+        })
+        .catch(error => console.log(error));
+}
+
+
+// **************************** CLEAR FUNCTIONS ********************************
+
 function clearDeckWindow() {
     while (deckWindow.hasChildNodes() ) {  
         deckWindow.removeChild(deckWindow.firstChild);
-    }
-}
-
-function clearNavigationBar() {
-    while (navigationBar.hasChildNodes() ) {  
-        navigationBar.removeChild(navigationBar.firstChild);
     }
 }
 
@@ -223,10 +291,10 @@ function clearCardDiv() {
 function clearEverything() {
     clearCardWindow();
     clearDeckWindow();
-    clearNavigationBar();
     clearCardDiv();
 }
 
+//*******************************CARD FUNCTIONS********************************
 
 function displayDeck(deckId){
     fetch(deckURL(deckId))
@@ -402,5 +470,3 @@ function shuffleCards(cards){
     return newcards;
 
 }
-
-fetchDecks();
