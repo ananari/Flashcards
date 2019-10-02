@@ -341,32 +341,34 @@ function displayAllCards(deck) {
     console.log("displayAllCards deckID = ", deck.cards)
     //create front column and attach to deck window
     const frontColumn = document.createElement('col');
-    frontColumn.innerText = 'Front';
+    frontColumn.innerText = 'Front of card';
     frontColumn.setAttribute('id', 'front-column')
     frontColumn.classList.add('viewAll-column');
     deckWindow.appendChild(frontColumn);
     //create back column and attach to deck window
     const backColumn = document.createElement('col');
-    backColumn.innerText = 'Back';
+    backColumn.innerText = 'Back of card';
     backColumn.setAttribute('id', 'back-column')
     backColumn.classList.add('viewAll-column');
     deckWindow.appendChild(backColumn);
     
     for (const card of deck.cards) {
         
-        //add front of card to row
+        //add front of card to row and append to front column
             //console.log("front of card = ", card.front)
         const frontRow = document.createElement('row');
         const frontDiv = document.createElement('div');
         frontDiv.innerText = card.front;
+        frontDiv.classList.add('card-front');
         frontRow.appendChild(frontDiv);
         frontColumn.appendChild(frontRow);
 
-        //add back of card to row
+        //add back of card to row and append to back column
             //console.log("back of card = ", card.back)
         const backRow = document.createElement('row')
         const backDiv = document.createElement('div');
         backDiv.innerText = card.back;
+        backDiv.classList.add('card-back');
         backRow.appendChild(backDiv);
         backColumn.appendChild(backRow);
     }
@@ -646,20 +648,24 @@ function displayDeck(deckId){
 }
 
 function createCardWindow(deckId, index, cards){
-    let next = document.createElement('button');
+    let nextCard = document.createElement('button');
     let newCard = document.createElement('button');
     let editCard = document.createElement('button');
     let deleteCard = document.createElement('button');
-    next.innerText = 'Next';
+    nextCard.innerText = 'Next card';
+    nextCard.classList.add('card-nav');
     newCard.innerText = "New card";
+    newCard.classList.add('card-nav');
     editCard.innerText = "Edit card";
+    editCard.classList.add('card-nav');
     deleteCard.innerText = "Delete card"; 
-    cardWindow.appendChild(next);
+    deleteCard.classList.add('card-nav');
+    cardWindow.appendChild(nextCard);
     cardWindow.appendChild(newCard);
     cardWindow.appendChild(editCard);
     cardWindow.appendChild(deleteCard);
   
-    next.addEventListener('click', function(){
+    nextCard.addEventListener('click', function(){
         clearFlash();
         if((index < cards.length - 1)){
             clearCardDiv();
