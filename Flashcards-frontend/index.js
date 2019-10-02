@@ -28,16 +28,10 @@ logIn.addEventListener('click', function(event){
     usernamelabel.innerText = "Username:"
     let usernameinput = document.createElement('input');
     usernameinput.setAttribute('type', 'text');
-    // let emaillabel = document.createElement('p');
-    // emaillabel.innerText = "Back side:"
-    // let emailinput = document.createElement('input');
-    // emailinput.setAttribute('type', 'text');
     let submit = document.createElement('input');
     submit.setAttribute('type', 'submit');
     form.appendChild(usernamelabel);
     form.appendChild(usernameinput);
-    // form.appendChild(emaillabel);
-    // form.appendChild(emailinput);
     form.appendChild(submit);
     loginForm.appendChild(form);
     submit.addEventListener('click', function(event){
@@ -146,56 +140,10 @@ function loadDecks(deckData) {
     })
 
     //bootstrap displaydecks into cards
-    displayDecks2(deckData)
+    displayDecks(deckData)
 }
 
 function displayDecks(deckData) {
-    for (const deck of deckData) {
-        //console.log("deck name = ", deck)
-        
-        //create li for each deck with it's name
-        const li = document.createElement('li');
-        li.innerText = deck.name; //would be nice to display number of cards in each deck
-        
-        //study deck button
-        const studyDeckButton = document.createElement('button');
-        studyDeckButton.innerText = ' Study ';
-        li.appendChild(studyDeckButton);
-        studyDeckButton.addEventListener('click', (event) => {
-            console.log('study button has been pushed');
-            clearDeckWindow();
-            displayDeck(deck.id);
-        });
-
-        //edit deck button
-        const editDeckButton = document.createElement('button');
-        editDeckButton.innerText = ' Edit ';
-        li.appendChild(editDeckButton);
-        editDeckButton.addEventListener('click', (event) => {
-            console.log('edit button has been pushed');
-            clearDeckWindow();
-            editDeckForm(deck);
-        });
-
-        //delete deck button
-        const deleteDeckButton = document.createElement('button');
-        deleteDeckButton.innerText = ' Delete ';
-        li.appendChild(deleteDeckButton);
-        deleteDeckButton.addEventListener('click', (event) => {
-            console.log('delete button has been pushed');
-            let result = confirm("Are you sure? You won't be able to undo this!")
-            if(result) {
-                clearDeckWindow();
-                deleteDeck(deck);
-            }
-        });
-
-        //append to main window area
-        deckWindow.appendChild(li);
-    }
-}
-
-function displayDecks2(deckData) {
     for (const deck of deckData) {
         //console.log("deck name = ", deck)
         
@@ -518,7 +466,6 @@ function displayDeck(deckId){
                         back: backinput.value,
                         deck_id: deckId
                     }
-                    // shuffled.push(postdata);
                     let postconfig = {
                         method: "POST",
                         headers: {
@@ -564,7 +511,7 @@ function createCardWindow(deckId, index, cards){
     next.addEventListener('click', function(){
         clearFlash();
         if((index < cards.length - 1)){
-            cardDiv.innerHTML = "";
+            clearCardDiv();
             displayCard(cards[++index]);
         }
         else{
@@ -604,7 +551,6 @@ function createCardWindow(deckId, index, cards){
                 back: backinput.value,
                 deck_id: deckId
             }
-          // shuffled.push(postdata);
             let postconfig = {
                 method: "POST",
                 headers: {
@@ -696,24 +642,6 @@ function createCardWindow(deckId, index, cards){
     })
 }
 
-// COMMENTED OUT OLD DISPLAY CARD CODE
-// function displayCard(obj){
-//     let p = document.createElement('p');
-//     p.innerText = obj.front;
-//     let isFront = true;
-//     cardDiv.appendChild(p);
-//     p.addEventListener('click', function(){
-//         isFront = !(isFront);
-//         if(isFront){
-//             p.innerText = obj.front;
-//         }
-//         else {
-//             p.innerText = obj.back;
-//         }
-//     })
-// }
-
-// NEW DISPLAYCARD CODE w/ STYLING
 function displayCard(obj){
     let p = document.createElement('h1');
     p.innerText = obj.front;
@@ -721,6 +649,7 @@ function displayCard(obj){
     let isFront = true;
     cardDiv.appendChild(p);
     //add card-front css prop
+    cardDiv.classList.remove("card-back");
     cardDiv.classList.add("card-front");
 
     //changed to if smoeone clicks on flashcard instead of p content
