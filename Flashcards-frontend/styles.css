@@ -33,3 +33,6 @@ div.card-back {
     border-radius: 10px;
 }
 
+.hidden {
+    display: none;
+}
