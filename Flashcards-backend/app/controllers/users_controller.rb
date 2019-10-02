@@ -22,9 +22,16 @@ class UsersController < ApplicationController
     end
 
     def edit
+        
     end
 
     def update
+        user = set_user
+        if user.update(user_params)
+            render json: user
+        else
+            render json: {errors: user.errors}.to_json
+        end
     end
 
     def set_user

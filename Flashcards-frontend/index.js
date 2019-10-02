@@ -9,6 +9,7 @@ const cardDiv = document.querySelector('#cards');
 const logIn = document.querySelector('#log-in');
 const signUp = document.querySelector('#sign-up');
 const logOut = $('#log-out')[0];
+const myProfile = $('#my-profile')[0];
 const loginForm = document.querySelector('#login-form');
 const flash = $('#flash')[0];
 const cardsURL = "http://localhost:3000/cards";
@@ -18,12 +19,46 @@ const usersURL = "http://localhost:3000/users";
 const deckURL = id => `http://localhost:3000/decks/${id}`;
 const cardURL = id => `http://localhost:3000/cards/${id}`;
 let currentUser = {};
+const userURL = () => `http://localhost:3000/users/${currentUser.id}`;
 
 createNavBar(); 
 
 logIn.addEventListener('click', function(event){
     event.preventDefault();
     clearEverything();
+    newSession();
+})
+
+signUp.addEventListener('click', function(event){
+    event.preventDefault();
+    clearEverything();
+    newUser();
+})
+
+logOut.addEventListener('click', function(event){
+    event.preventDefault();
+    currentUser = {};
+    clearEverything();
+    cardWindow.innerText = "We hope you had a great day!";
+    createNavBar();
+})
+
+//add event listener for click
+myDecksButton.addEventListener('click', (event) => {
+    //console.log("'My Decks' button has been clicked via ", event);
+    clearEverything();
+    fetchDecks();
+});
+
+myProfile.addEventListener('click', function(event){
+    event.preventDefault();
+    clearEverything();
+    editUser();
+})
+
+//*********************************USER FUNCTIONS*****************************************/
+
+function newSession(){
     let form = document.createElement('form');
     let usernamelabel = document.createElement('p');
     usernamelabel.innerText = "Username:"
@@ -68,12 +103,9 @@ logIn.addEventListener('click', function(event){
         })
         .catch(error => console.log(error));
     })
-    
-})
+}
 
-signUp.addEventListener('click', function(event){
-    event.preventDefault();
-    clearEverything();
+function newUser(){
     let form = document.createElement('form');
     let usernamelabel = document.createElement('p');
     usernamelabel.innerText = "Username:"
@@ -119,27 +151,83 @@ signUp.addEventListener('click', function(event){
             else {
                 currentUser = json; 
                 clearEverything();
+                createNavBar(); 
                 fetchDecks();
             }
         })
         .catch(error => console.log(error));
     })
-})
+}
 
-logOut.addEventListener('click', function(event){
-    event.preventDefault();
-    currentUser = {};
-    clearEverything();
-    cardWindow.innerText = "We hope you had a great day!";
-    createNavBar();
-})
+function editUser(){
+    let usernameData = document.createElement('p');
+    usernameData.innerText = `Username: ${currentUser.username}`;
+    let emailData = document.createElement('p');
+    emailData.innerText = `E-mail address: ${currentUser.email}`;
+    let edit = document.createElement('button');
+    edit.innerText = "edit";
+    loginForm.append(usernameData);
+    loginForm.append(emailData);
+    loginForm.append(edit);
+    edit.addEventListener('click', function(){
+        let form = document.createElement('form');
+        let nameLabel = document.createElement('p');
+        nameLabel.innerText = "Username: "
+        let nameInput = document.createElement('input');
+        nameInput.setAttribute('type', 'text'); 
+        nameInput.setAttribute('value', currentUser.username);
+        let emailLabel = document.createElement('p');
+        emailLabel.innerTetx = "E-mail address: ";
+        let emailInput = document.createElement('input');
+        emailInput.setAttribute('type', 'text');
+        emailInput.setAttribute('value', currentUser.email);
+        let submit = document.createElement('input')
+        submit.setAttribute('type', 'submit');
+        form.appendChild(nameLabel);
+        form.appendChild(nameInput);
+        form.appendChild(emailLabel);
+        form.appendChild(emailInput);
+        form.appendChild(submit);
+        loginForm.append(form);
+        submit.addEventListener('click', function(event){
+            event.preventDefault();
+            let patchdata = {username: nameInput.value, email: emailInput.value};
+            console.log(patchdata);
+            let patchconfig = {
+                method: "PATCH",
+                headers: {
+                    "content-type": "application/json",
+                    "accept": "application/json"
+                },
+                body: JSON.stringify(patchdata)
+            }
+            console.log(patchconfig);
+            fetch(userURL(), patchconfig)
+            .then(res => res.json())
+            .then(function(json){
+                if(json.hasOwnProperty("errors")) {
+                    console.log(json);
+                    let errorMsg = "";
+                    for(const j in json["errors"]){
+                        for(const k of json["errors"][j]){
+                            errorMsg += `${j} ${k} \n`
+                        }
+                    }
+                    flash.innerText = errorMsg;
+                }
+                else {
+                    currentUser = json; 
+                    createNavBar();
+                    clearEverything();
+                    editUser();
+                }
+            });
+        })
 
-//add event listener for click
-myDecksButton.addEventListener('click', (event) => {
-    //console.log("'My Decks' button has been clicked via ", event);
-    clearEverything();
-    fetchDecks();
-});
+    })
+}
+
+//*********************************DECK FUNCTIONS****************************************/
 
 function fetchDecks() {
     fetch(decksURL)
@@ -759,12 +847,13 @@ function createNavBar(){
         $('#sign-up-button')[0].classList.add('hidden');
         $('#my-decks-button')[0].classList.remove('hidden');
         $('#log-out-button')[0].classList.remove('hidden');
+        $('#my-profile-button')[0].classList.remove('hidden');
     }
     else {
         $('#my-decks-button')[0].classList.add('hidden');
         $('#log-out-button')[0].classList.add('hidden');
         $('#log-in-button')[0].classList.remove('hidden');
         $('#sign-up-button')[0].classList.remove('hidden');
-        
+        $('#my-profile-button')[0].classList.add('hidden');
     }
 }
