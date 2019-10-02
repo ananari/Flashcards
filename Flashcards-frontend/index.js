@@ -6,6 +6,7 @@ const myDecksWindow = document.getElementById('my-decks-window');
 const deckWindow = document.getElementById('deck-window')
 const cardWindow = document.querySelector('#card-window');
 const cardDiv = document.querySelector('#cards');
+const logIn = document.querySelector('#log-in');
 const signUp = document.querySelector('#sign-up');
 const loginForm = document.querySelector('#login-form');
 const check = document.querySelector('#check');
@@ -13,12 +14,13 @@ const flash = $('#flash')[0];
 const cardsURL = "http://localhost:3000/cards";
 const decksURL = `http://localhost:3000/decks`;
 const sessionsURL = "http://localhost:3000/sessions";
+const usersURL = "http://localhost:3000/users";
 const deckURL = id => `http://localhost:3000/decks/${id}`;
 const cardURL = id => `http://localhost:3000/cards/${id}`;
 
 
 
-signUp.addEventListener('click', function(event){
+logIn.addEventListener('click', function(event){
     event.preventDefault();
     clearEverything();
     let form = document.createElement('form');
@@ -59,7 +61,46 @@ signUp.addEventListener('click', function(event){
     
 })
 
-
+signUp.addEventListener('click', function(event){
+    event.preventDefault();
+    clearEverything();
+    let form = document.createElement('form');
+    let usernamelabel = document.createElement('p');
+    usernamelabel.innerText = "Username:"
+    let usernameinput = document.createElement('input');
+    usernameinput.setAttribute('type', 'text');
+    let emaillabel = document.createElement('p');
+    emaillabel.innerText = "Email:"
+    let emailinput = document.createElement('input');
+    emailinput.setAttribute('type', 'text');
+    let submit = document.createElement('input');
+    submit.setAttribute('type', 'submit');
+    form.appendChild(usernamelabel);
+    form.appendChild(usernameinput);
+    form.appendChild(emaillabel);
+    form.appendChild(emailinput);
+    form.appendChild(submit);
+    loginForm.appendChild(form);
+    submit.addEventListener('click', function(event){
+        event.preventDefault();
+        postdata = {username: usernameinput.value, email: emailinput.value}
+        postconfig = {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "accept": "application/json"
+            },
+            body: JSON.stringify(postdata)
+        }
+        fetch(usersURL, postconfig)
+        .then(res => res.json())
+        .then(function(json){
+            console.log(json);
+            fetchDecks();
+        })
+        .catch(error => console.log(error));
+    })
+})
 
 check.addEventListener('click', function(){
     console.log(Cookies.get());
@@ -452,6 +493,7 @@ function displayDeck(deckId){
             cardWindow.appendChild(newCard);
             newCard.addEventListener('click', function(){
                 clearFlash();
+                $('#card-window form').remove();
                 let form = document.createElement('form');
                 let frontlabel = document.createElement('p');
                 frontlabel.innerText = "Front side:"
@@ -537,6 +579,7 @@ function createCardWindow(deckId, index, cards){
     })
     newCard.addEventListener('click', function(){
         clearFlash();
+        $('#card-window form').remove();
         let form = document.createElement('form');
         let frontlabel = document.createElement('p');
         frontlabel.innerText = "Front side:"
@@ -585,6 +628,7 @@ function createCardWindow(deckId, index, cards){
     })
     editCard.addEventListener('click', function(){
         clearFlash(); 
+        $('#card-window form').remove();
         let form = document.createElement('form');
         let frontlabel = document.createElement('p');
         frontlabel.innerText = "Front side:"
@@ -611,7 +655,6 @@ function createCardWindow(deckId, index, cards){
                 back: backinput.value,
                 deck_id: deckId
             }
-          // shuffled.push(postdata);
             let patchconfig = {
                 method: "PATCH",
                 headers: {
