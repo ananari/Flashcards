@@ -164,8 +164,8 @@ function displayDecks(deckData) {
         
         //study deck button
         const studyDeckButton = document.createElement('button');
-        studyDeckButton.innerText = '  Study!  ';
-        studyDeckButton.style.backgroundColor = "lightgreen"
+        studyDeckButton.innerText = 'Study!';
+        studyDeckButton.classList.add('study-button');
         newDiv.appendChild(studyDeckButton);
         studyDeckButton.addEventListener('click', (event) => {
             console.log('study button has been pushed');
@@ -175,8 +175,8 @@ function displayDecks(deckData) {
 
         //edit deck button
         const editDeckButton = document.createElement('button');
-        editDeckButton.innerText = '  Edit  ';
-        editDeckButton.style.backgroundColor = "lightgoldenrodyellow"
+        editDeckButton.innerText = 'Edit Name';
+        editDeckButton.classList.add('edit-button');
         newDiv.appendChild(editDeckButton);
         editDeckButton.addEventListener('click', (event) => {
             console.log('edit button has been pushed');
@@ -184,10 +184,21 @@ function displayDecks(deckData) {
             editDeckForm(deck);
         });
 
+        //view all cards button
+        const viewAllCardsButton = document.createElement('button');
+        viewAllCardsButton.innerText = 'View All';
+        viewAllCardsButton.classList.add('viewAll-button');
+        newDiv.appendChild(viewAllCardsButton);
+        viewAllCardsButton.addEventListener('click', (event) => {
+            console.log('view all cards button has been pushed');
+            clearEverything();
+            displayAllCards(deck);
+        });        
+
         //delete deck button
         const deleteDeckButton = document.createElement('button');
-        deleteDeckButton.innerText = '  Delete  ';
-        deleteDeckButton.style.backgroundColor = "lightcoral"
+        deleteDeckButton.innerText = 'Delete';
+        deleteDeckButton.classList.add('delete-button')
         newDiv.appendChild(deleteDeckButton);
         deleteDeckButton.addEventListener('click', (event) => {
             console.log('delete button has been pushed');
@@ -201,6 +212,42 @@ function displayDecks(deckData) {
         //append to main window area
         deckWindow.appendChild(newDiv);
     }
+}
+
+function displayAllCards(deck) {
+    console.log("displayAllCards deckID = ", deck.cards)
+    //create front column and attach to deck window
+    const frontColumn = document.createElement('col');
+    frontColumn.innerText = 'Front';
+    frontColumn.setAttribute('id', 'front-column')
+    frontColumn.classList.add('viewAll-column');
+    deckWindow.appendChild(frontColumn);
+    //create back column and attach to deck window
+    const backColumn = document.createElement('col');
+    backColumn.innerText = 'Back';
+    backColumn.setAttribute('id', 'back-column')
+    backColumn.classList.add('viewAll-column');
+    deckWindow.appendChild(backColumn);
+    
+    for (const card of deck.cards) {
+        
+        //add front of card to row
+            //console.log("front of card = ", card.front)
+        const frontRow = document.createElement('row');
+        const frontDiv = document.createElement('div');
+        frontDiv.innerText = card.front;
+        frontRow.appendChild(frontDiv);
+        frontColumn.appendChild(frontRow);
+
+        //add back of card to row
+            //console.log("back of card = ", card.back)
+        const backRow = document.createElement('row')
+        const backDiv = document.createElement('div');
+        backDiv.innerText = card.back;
+        backRow.appendChild(backDiv);
+        backColumn.appendChild(backRow);
+    }
+
 }
 
 function createDeckForm() {
