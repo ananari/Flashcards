@@ -83,7 +83,7 @@ function fetchDecks() {
 function loadDecks(deckData) {
     //display decks banner
     const myDecksBanner = document.createElement('h1')
-    myDecksBanner.innerText = `These are all the decks you've created!`;
+    myDecksBanner.innerText = `These are all the flashcard decks you've created!`;
     myDecksWindow.appendChild(myDecksBanner);
 
     //create a "New Deck" button
@@ -91,6 +91,7 @@ function loadDecks(deckData) {
     newDeck.innerText = 'Create a New Deck with '
     const newDeckButton = document.createElement('button');
     newDeckButton.innerText = `Magic`;
+    newDeckButton.style.backgroundColor = "MediumOrchid";
     newDeck.appendChild(newDeckButton);
     
     //append to mydecksWindow
