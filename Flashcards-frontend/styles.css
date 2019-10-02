@@ -54,33 +54,48 @@ div.deck {
 
 div.card-front {
     text-align: center;
+    vertical-align: center;
     background-color: lightblue;
     height: 400px;
     width: 600px;
     padding: 150px 0;
     border-radius: 10px;
+    border:3px solid black;
 }
 
 div.card-back {
     text-align: center;
+    vertical-align: center;
     background-color: lightgreen;
     height: 400px;
     width: 600px;
     padding: 150px 0;
     border-radius: 10px;
+    border:3px solid black;
 }
 
 .viewAll-row {
     display: flex;
     text-align: center;
-    font-size: 20px;
   }
   
 .viewAll-column {
     flex: 50%;
     text-align: center;
-    font-size: 20px;
+    font-size: 40px;
   }
+
 .hidden {
     display: none;
+}
+
+p.flash {
+    text-align: center;
+}
+
+.card-nav {
+    width: 150px;
+    padding: 5px 10px;
+    font-size: 18px;
+    border-radius: 12px;
 }
