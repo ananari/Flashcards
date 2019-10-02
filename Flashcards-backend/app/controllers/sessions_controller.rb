@@ -10,11 +10,10 @@ class SessionsController < ApplicationController
     def create
         user = User.find_by(username: session_parameters[:username])
         if user
-            session[:username] = user.username
             render json: user
         else
-            no_user_found = {error: "no user found"}
-            ender json: no_user_found.to_json
+            no_user_found = {errors: "no user found"}
+            render json: no_user_found.to_json
         end
     end
 
