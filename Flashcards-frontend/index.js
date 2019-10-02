@@ -9,6 +9,7 @@ const cardDiv = document.querySelector('#cards');
 const signUp = document.querySelector('#sign-up');
 const loginForm = document.querySelector('#login-form');
 const check = document.querySelector('#check');
+const flash = $('#flash')[0];
 const cardsURL = "http://localhost:3000/cards";
 const decksURL = `http://localhost:3000/decks`;
 const sessionsURL = "http://localhost:3000/sessions";
@@ -19,11 +20,7 @@ const cardURL = id => `http://localhost:3000/cards/${id}`;
 
 signUp.addEventListener('click', function(event){
     event.preventDefault();
-    console.log('im clik');
-    clearDeckWindow();
-    clearCardDiv();
-    clearCardWindow();
-    clearLoginForm();
+    clearEverything();
     let form = document.createElement('form');
     let usernamelabel = document.createElement('p');
     usernamelabel.innerText = "Username:"
@@ -65,10 +62,6 @@ signUp.addEventListener('click', function(event){
 
 
 check.addEventListener('click', function(){
-    // fetch(sessionsURL)
-    // .then(res => res.json())
-    // .then(json => console.log(json))
-    // .catch(error => console.log(error));
     console.log(Cookies.get());
 })
 
@@ -338,6 +331,7 @@ function createDeck(newDeckNameValue, newDeckUserValue) {
         .then(response => response.json() )
         .then( (deckData) => {
             fetchDecks(deckData);
+            flash.innerText = "Your deck has been successfully created.";
         })
         .catch(error => console.log(error));
 }
@@ -357,6 +351,7 @@ function deleteDeck(deck) {
     .then(response => response.json() )
     .then( (deckData) => {
         fetchDecks(deckData);
+        flash.innerText = "Your deck has been successfully deleted.";
     })
     .catch(error => console.log(error));
 }
@@ -384,6 +379,7 @@ function editDeck(deck, editDeckNameValue, editDeckUserValue) {
         .then( (deckData) => {
             console.log("response from edit deck fxn: ",deckData)
             fetchDecks(deckData);
+            flash.innerText = "Your deck has been successfully edited.";
         })
         .catch(error => console.log(error));
 }
@@ -421,167 +417,41 @@ function clearLoginForm() {
     }
 }
 
+function clearFlash() {
+    flash.innerText = "";
+}
+
 function clearEverything() {
     clearMyDecksWindow();
     clearDeckWindow();
     clearCardWindow();
     clearCardDiv();
     clearLoginForm();
+    clearFlash();
 }
 
 //*******************************CARD FUNCTIONS********************************
 
 function displayDeck(deckId){
+    clearFlash();
     fetch(deckURL(deckId))
     .then(res => res.json())
     .then(function(json){
         if(!(json.cards.length === 0)){
             let card_index = 0;
             let shuffled = shuffleCards(json.cards);
-            displayCard(shuffled[card_index]); 
-            let next = document.createElement('button');
-            let newCard = document.createElement('button');
-            let editCard = document.createElement('button');
-            let deleteCard = document.createElement('button');
-            next.innerText = 'Next';
-            newCard.innerText = "New card";
-            editCard.innerText = "Edit card";
-            deleteCard.innerText = "Delete card"; 
-            cardWindow.appendChild(next);
-            cardWindow.appendChild(newCard);
-            cardWindow.appendChild(editCard);
-            cardWindow.appendChild(deleteCard);
-            
-            next.addEventListener('click', function(){
-                if((card_index < shuffled.length - 1)){
-                    cardDiv.innerHTML = "";
-                    displayCard(shuffled[++card_index]);
-                }
-                else{
-                    alert('You have reached the end of your cards!');
-                }
-                let forms = cardWindow.querySelectorAll('form');
-                if(forms){
-                    for(const form of forms){
-                        cardWindow.removeChild(form);
-                    }
-                }
-            })
-            newCard.addEventListener('click', function(){
-                let form = document.createElement('form');
-                let frontlabel = document.createElement('p');
-                frontlabel.innerText = "Front side:"
-                let frontinput = document.createElement('input');
-                frontinput.setAttribute('type', 'text');
-                let backlabel = document.createElement('p');
-                backlabel.innerText = "Back side:"
-                let backinput = document.createElement('input');
-                backinput.setAttribute('type', 'text');
-                let submit = document.createElement('input');
-                submit.setAttribute('type', 'submit');
-                form.appendChild(frontlabel);
-                form.appendChild(frontinput);
-                form.appendChild(backlabel);
-                form.appendChild(backinput);
-                form.appendChild(submit);
-                cardWindow.appendChild(form);
-                submit.addEventListener('click', function(event){
-                    event.preventDefault();  
-                    let postdata = {                
-                        front: frontinput.value,
-                        back: backinput.value,
-                        deck_id: deckId
-                    }
-                    // shuffled.push(postdata);
-                    let postconfig = {
-                        method: "POST",
-                        headers: {
-                            "content-type": "application/json",
-                            "accept": "application/json"
-                        },
-                        body: JSON.stringify(postdata)
-                    }
-                    fetch(cardsURL, postconfig)
-                    .then(res => res.json())
-                    .then(function(json){
-                        shuffled.push(json); 
-                    })
-                    .catch(error => console.log(error));
-                    
-                })
-
-
-            })
-            editCard.addEventListener('click', function(){
-                let form = document.createElement('form');
-                let frontlabel = document.createElement('p');
-                frontlabel.innerText = "Front side:"
-                let frontinput = document.createElement('input');
-                frontinput.setAttribute('type', 'text');
-                frontinput.setAttribute('value', shuffled[card_index].front)
-                let backlabel = document.createElement('p');
-                backlabel.innerText = "Back side:"
-                let backinput = document.createElement('input');
-                backinput.setAttribute('type', 'text');
-                backinput.setAttribute('value', shuffled[card_index].back)
-                let submit = document.createElement('input');
-                submit.setAttribute('type', 'submit');
-                form.appendChild(frontlabel);
-                form.appendChild(frontinput);
-                form.appendChild(backlabel);
-                form.appendChild(backinput);
-                form.appendChild(submit);
-                cardWindow.appendChild(form);
-                submit.addEventListener('click', function(event){
-                    event.preventDefault();  
-                    let patchdata = {                
-                        front: frontinput.value,
-                        back: backinput.value,
-                        deck_id: deckId
-                    }
-                    // shuffled.push(postdata);
-                    let patchconfig = {
-                        method: "PATCH",
-                        headers: {
-                            "content-type": "application/json",
-                            "accept": "application/json"
-                        },
-                        body: JSON.stringify(patchdata)
-                    }
-                    fetch(cardURL(shuffled[card_index].id), patchconfig)
-                    .then(res => res.json())
-                    .then(function(json){
-                        shuffled[card_index] = json; 
-                        clearCardDiv();
-                        displayCard(shuffled[card_index]);
-                    })
-                    .catch(error => console.log(error));
-                    
-                })
-                
-            })
-            deleteCard.addEventListener('click', function(){
-                let result = confirm("Are you sure? You won't be able to undo this!")
-                if(result){
-                    let delconfig = {
-                        method: "DELETE",
-                        headers: {
-                            "content-type": "application/json",
-                            "accept": "application/json"
-                        }
-                    }
-                    fetch(cardURL(shuffled[card_index].id), delconfig)
-                    .catch(error => console.log(error));
-                    
-                }
-            })
-        }
+            displayCard(shuffled[card_index]);   
+            createCardWindow(deckId, card_index, shuffled);
+          }
         else{
-            let shuffled = json.cards;
+            flash.innerText = "Oops! You have no cards here. Maybe you'd like to add one?"
+            let cards = json.cards;
+            let index = 0;
             let newCard = document.createElement('button');
             newCard.innerText = "New card";
             cardWindow.appendChild(newCard);
             newCard.addEventListener('click', function(){
+                clearFlash();
                 let form = document.createElement('form');
                 let frontlabel = document.createElement('p');
                 frontlabel.innerText = "Front side:"
@@ -618,7 +488,11 @@ function displayDeck(deckId){
                     fetch(cardsURL, postconfig)
                     .then(res => res.json())
                     .then(function(json){
-                        shuffled.push(json); 
+                        cards.push(json); 
+                        displayCard(json);
+                        clearCardWindow();
+                        createCardWindow(deckId, index, cards);
+                        flash.innerText = "Your card has been successfully created."
                     })
                     .catch(error => console.log(error));
                     
@@ -629,6 +503,154 @@ function displayDeck(deckId){
         }
     })
     .catch(error => console.log(error));
+}
+
+function createCardWindow(deckId, index, cards){
+    let next = document.createElement('button');
+    let newCard = document.createElement('button');
+    let editCard = document.createElement('button');
+    let deleteCard = document.createElement('button');
+    next.innerText = 'Next';
+    newCard.innerText = "New card";
+    editCard.innerText = "Edit card";
+    deleteCard.innerText = "Delete card"; 
+    cardWindow.appendChild(next);
+    cardWindow.appendChild(newCard);
+    cardWindow.appendChild(editCard);
+    cardWindow.appendChild(deleteCard);
+  
+    next.addEventListener('click', function(){
+        clearFlash();
+        if((index < cards.length - 1)){
+            cardDiv.innerHTML = "";
+            displayCard(cards[++index]);
+        }
+        else{
+            alert('You have reached the end of your cards!');
+        }
+        let forms = cardWindow.querySelectorAll('form');
+        if(forms){
+            for(const form of forms){
+                cardWindow.removeChild(form);
+            }
+        }
+    })
+    newCard.addEventListener('click', function(){
+        clearFlash();
+        let form = document.createElement('form');
+        let frontlabel = document.createElement('p');
+        frontlabel.innerText = "Front side:"
+        let frontinput = document.createElement('input');
+        frontinput.setAttribute('type', 'text');
+        let backlabel = document.createElement('p');
+        backlabel.innerText = "Back side:"
+        let backinput = document.createElement('input');
+        backinput.setAttribute('type', 'text');
+        let submit = document.createElement('input');
+        submit.setAttribute('type', 'submit');
+        form.appendChild(frontlabel);
+        form.appendChild(frontinput);
+        form.appendChild(backlabel);
+        form.appendChild(backinput);
+        form.appendChild(submit);
+        cardWindow.appendChild(form);
+        submit.addEventListener('click', function(event){
+            event.preventDefault();  
+            let postdata = {                
+                front: frontinput.value,
+                back: backinput.value,
+                deck_id: deckId
+            }
+          // shuffled.push(postdata);
+            let postconfig = {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    "accept": "application/json"
+                },
+                body: JSON.stringify(postdata)
+            }
+            fetch(cardsURL, postconfig)
+            .then(res => res.json())
+            .then(function(json){
+                cards.push(json); 
+                cardWindow.removeChild(form);
+                flash.innerText = "Your card has been successfully created.";
+            })
+            .catch(error => console.log(error));
+          
+        })
+
+
+    })
+    editCard.addEventListener('click', function(){
+        clearFlash(); 
+        let form = document.createElement('form');
+        let frontlabel = document.createElement('p');
+        frontlabel.innerText = "Front side:"
+        let frontinput = document.createElement('input');
+        frontinput.setAttribute('type', 'text');
+        frontinput.setAttribute('value', cards[index].front)
+        let backlabel = document.createElement('p');
+        backlabel.innerText = "Back side:"
+        let backinput = document.createElement('input');
+        backinput.setAttribute('type', 'text');
+        backinput.setAttribute('value', cards[index].back)
+        let submit = document.createElement('input');
+        submit.setAttribute('type', 'submit');
+        form.appendChild(frontlabel);
+        form.appendChild(frontinput);
+        form.appendChild(backlabel);
+        form.appendChild(backinput);
+        form.appendChild(submit);
+        cardWindow.appendChild(form);
+        submit.addEventListener('click', function(event){
+            event.preventDefault();  
+            let patchdata = {                
+                front: frontinput.value,
+                back: backinput.value,
+                deck_id: deckId
+            }
+          // shuffled.push(postdata);
+            let patchconfig = {
+                method: "PATCH",
+                headers: {
+                    "content-type": "application/json",
+                    "accept": "application/json"
+                },
+                body: JSON.stringify(patchdata)
+            }
+            fetch(cardURL(cards[index].id), patchconfig)
+            .then(res => res.json())
+            .then(function(json){
+                cards[index] = json; 
+                clearCardDiv();
+                cardWindow.removeChild(form);
+                displayCard(cards[index]);
+                flash.innerText = "Your card has been successfully edited."; 
+            })
+            .catch(error => console.log(error));
+      
+        })
+      
+    })
+    deleteCard.addEventListener('click', function(){
+        let result = confirm("Are you sure? You won't be able to undo this!")
+        if(result){
+            let delconfig = {
+                method: "DELETE",
+                headers: {
+                    "content-type": "application/json",
+                    "accept": "application/json"
+                }
+            }
+            fetch(cardURL(cards[index].id), delconfig)
+            .then(function(res){
+                flash.innerText = "Your card has been successfully deleted.";
+            })
+            .catch(error => console.log(error));    
+        }
+    })
 }
 
 function displayCard(obj){
@@ -658,3 +680,4 @@ function shuffleCards(cards){
     return newcards;
 
 }
+
