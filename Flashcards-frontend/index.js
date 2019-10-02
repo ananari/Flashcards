@@ -309,7 +309,7 @@ function editDeckForm(deck) {
     //form title
     const formTitle = document.createElement('h3');
     formTitle.innerText = `Edit the ${deck.name} deck: `;
-    deckWindow.appendChild(formTitle);
+    myDecksWindow.appendChild(formTitle);
 
     //create form for editing name of deck
     const editDeckForm = document.createElement('form');
@@ -696,18 +696,47 @@ function createCardWindow(deckId, index, cards){
     })
 }
 
+// COMMENTED OUT OLD DISPLAY CARD CODE
+// function displayCard(obj){
+//     let p = document.createElement('p');
+//     p.innerText = obj.front;
+//     let isFront = true;
+//     cardDiv.appendChild(p);
+//     p.addEventListener('click', function(){
+//         isFront = !(isFront);
+//         if(isFront){
+//             p.innerText = obj.front;
+//         }
+//         else {
+//             p.innerText = obj.back;
+//         }
+//     })
+// }
+
+// NEW DISPLAYCARD CODE w/ STYLING
 function displayCard(obj){
-    let p = document.createElement('p');
+    let p = document.createElement('h1');
     p.innerText = obj.front;
+    
     let isFront = true;
     cardDiv.appendChild(p);
-    p.addEventListener('click', function(){
+    //add card-front css prop
+    cardDiv.classList.add("card-front");
+
+    //changed to if smoeone clicks on flashcard instead of p content
+    cardDiv.addEventListener('click', function(){
         isFront = !(isFront);
         if(isFront){
             p.innerText = obj.front;
+            // have to remove previous class and add new
+            cardDiv.classList.remove("card-back");
+            cardDiv.classList.add("card-front");
         }
         else {
             p.innerText = obj.back;
+            // have to remove previous class and add new
+            cardDiv.classList.remove("card-front");
+            cardDiv.classList.add("card-back");
         }
     })
 }
