@@ -8,8 +8,8 @@ const cardWindow = document.querySelector('#card-window');
 const cardDiv = document.querySelector('#cards');
 const logIn = document.querySelector('#log-in');
 const signUp = document.querySelector('#sign-up');
+const logOut = $('#log-out')[0];
 const loginForm = document.querySelector('#login-form');
-const check = document.querySelector('#check');
 const flash = $('#flash')[0];
 const cardsURL = "http://localhost:3000/cards";
 const decksURL = `http://localhost:3000/decks`;
@@ -17,8 +17,9 @@ const sessionsURL = "http://localhost:3000/sessions";
 const usersURL = "http://localhost:3000/users";
 const deckURL = id => `http://localhost:3000/decks/${id}`;
 const cardURL = id => `http://localhost:3000/cards/${id}`;
+let currentUser = {};
 
-
+createNavBar(); 
 
 logIn.addEventListener('click', function(event){
     event.preventDefault();
@@ -48,7 +49,22 @@ logIn.addEventListener('click', function(event){
         fetch(sessionsURL, postconfig)
         .then(res => res.json())
         .then(function(json){
-            Cookies.set('username', json.username);
+            if(json.hasOwnProperty("errors")) {
+                console.log(json);
+                let errorMsg = "";
+                for(const j in json["errors"]){
+                    for(const k of json["errors"][j]){
+                        errorMsg += `${j} ${k} \n`
+                    }
+                }
+                flash.innerText = errorMsg;
+            }
+            else {
+                currentUser = json; 
+                createNavBar();
+                clearEverything();
+                fetchDecks();
+            }
         })
         .catch(error => console.log(error));
     })
@@ -76,6 +92,7 @@ signUp.addEventListener('click', function(event){
     form.appendChild(submit);
     loginForm.appendChild(form);
     submit.addEventListener('click', function(event){
+        clearFlash();
         event.preventDefault();
         postdata = {username: usernameinput.value, email: emailinput.value}
         postconfig = {
@@ -89,15 +106,32 @@ signUp.addEventListener('click', function(event){
         fetch(usersURL, postconfig)
         .then(res => res.json())
         .then(function(json){
-            console.log(json);
-            fetchDecks();
+            if(json.hasOwnProperty("errors")) {
+                console.log(json);
+                let errorMsg = "";
+                for(const j in json["errors"]){
+                    for(const k of json["errors"][j]){
+                        errorMsg += `${j} ${k} \n`
+                    }
+                }
+                flash.innerText = errorMsg;
+            }
+            else {
+                currentUser = json; 
+                clearEverything();
+                fetchDecks();
+            }
         })
         .catch(error => console.log(error));
     })
 })
 
-check.addEventListener('click', function(){
-    console.log(Cookies.get());
+logOut.addEventListener('click', function(event){
+    event.preventDefault();
+    currentUser = {};
+    clearEverything();
+    cardWindow.innerText = "We hope you had a great day!";
+    createNavBar();
 })
 
 //add event listener for click
@@ -111,7 +145,8 @@ function fetchDecks() {
     fetch(decksURL)
         .then(response => response.json() )
         .then(deckData => {
-            loadDecks(deckData);
+            let filteredData = deckData.filter(deck => deck.user_id == currentUser.id)
+            loadDecks(filteredData);
         })
 }
 
@@ -223,17 +258,6 @@ function createDeckForm() {
     newDeckNameInput.setAttribute('placeholder', 'Enter deck name');
     newDeckForm.appendChild(newDeckNameInput);
 
-    //label of user input box
-    const newDeckUserLabel = document.createElement('p');
-    newDeckUserLabel.innerText = "User of new deck: ";
-    newDeckForm.appendChild(newDeckUserLabel);
-
-    //value of label input box
-    const newDeckUserInput = document.createElement('input');
-    newDeckUserInput.setAttribute('type', 'number');
-    newDeckUserInput.setAttribute('placeholder', 'Enter user id');
-    newDeckForm.appendChild(newDeckUserInput);
-
     //submit button
     const newDeckSubmitButton = document.createElement('input');
     newDeckSubmitButton.setAttribute('type', 'Submit');
@@ -246,7 +270,7 @@ function createDeckForm() {
         event.preventDefault();
         newDeckNameValue = newDeckNameInput.value;
             //console.log("New Deck Name Value = ", newDeckNameValue);
-        newDeckUserValue = newDeckUserInput.value;
+        newDeckUserValue = currentUser.id;
             //console.log("New User Name Value = ", newDeckUserValue);
         clearEverything();
         createDeck(newDeckNameValue, newDeckUserValue);
@@ -272,16 +296,6 @@ function editDeckForm(deck) {
     editDeckNameInput.setAttribute('type', 'text');
     editDeckForm.appendChild(editDeckNameInput);
 
-    //label of user input box
-    const editDeckUserLabel = document.createElement('p');
-    editDeckUserLabel.innerText = "User of new deck: ";
-    editDeckForm.appendChild(editDeckUserLabel);
-
-    //value of label input box
-    const editDeckUserInput = document.createElement('input');
-    editDeckUserInput.setAttribute('type', 'number');
-    editDeckForm.appendChild(editDeckUserInput);
-
     //submit button
     const editDeckSubmitButton = document.createElement('input');
     editDeckSubmitButton.setAttribute('type', 'Submit');
@@ -294,7 +308,7 @@ function editDeckForm(deck) {
         event.preventDefault();
         editDeckNameValue = editDeckNameInput.value;
             //console.log("New Deck Name Value = ", editDeckNameValue);
-        editDeckUserValue = editDeckUserInput.value;
+        editDeckUserValue = currentUser.id;
             //console.log("New Deck Name Value = ", editDeckNameValue);
         clearEverything();
         editDeck(deck, editDeckNameValue, editDeckUserValue);
@@ -366,7 +380,7 @@ function editDeck(deck, editDeckNameValue, editDeckUserValue) {
     fetch(editDeckURL, editDeckObject)
         .then(response => response.json() )
         .then( (deckData) => {
-            console.log("response from edit deck fxn: ",deckData)
+            // console.log("response from edit deck fxn: ",deckData)
             fetchDecks(deckData);
             flash.innerText = "Your deck has been successfully edited.";
         })
@@ -398,6 +412,8 @@ function clearCardDiv() {
     while (cardDiv.hasChildNodes() ) {  
         cardDiv.removeChild(cardDiv.firstChild);
     }
+    cardDiv.classList.remove('card-front');
+    cardDiv.classList.remove('card-back');
 }
 
 function clearLoginForm() {
@@ -682,3 +698,20 @@ function shuffleCards(cards){
 
 }
 
+//**************************NAVBAR FUNCTIONS********************************/
+
+function createNavBar(){
+    if(currentUser.hasOwnProperty('id')) {
+        $('#log-in-button')[0].classList.add('hidden');
+        $('#sign-up-button')[0].classList.add('hidden');
+        $('#my-decks-button')[0].classList.remove('hidden');
+        $('#log-out-button')[0].classList.remove('hidden');
+    }
+    else {
+        $('#my-decks-button')[0].classList.add('hidden');
+        $('#log-out-button')[0].classList.add('hidden');
+        $('#log-in-button')[0].classList.remove('hidden');
+        $('#sign-up-button')[0].classList.remove('hidden');
+        
+    }
+}
