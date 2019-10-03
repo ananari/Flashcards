@@ -108,3 +108,20 @@ p.flash {
     background-color: #CCCCFF;
     border: black;
 }
+
+.welcome-header {
+    font-size: 50px;
+    text-align: center;
+}
+
+.welcome-text {
+    font-size: 35px;
+    text-align: center;
+}
+
+.center-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 25%;
+}
