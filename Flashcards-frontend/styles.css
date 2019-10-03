@@ -8,7 +8,7 @@ div.deck-window {
 
 div.deck {
     text-align: center;
-    background-color: lightseagreen;
+    background-color: lightgrey;
     height: 175px;
     width: 225px;
     box-shadow: 10px 10px grey;
@@ -17,36 +17,40 @@ div.deck {
 }
 
 .study-button {
-    background-color: lawngreen;
+    background-color: #4CAF50;
+    color: white;
     width: 90px;
-    padding: 5px 10px;
+    padding: 5px 5px;
     font-size: 14px;
     float: left;
     border-radius: 12px;
 }
 
 .edit-button {
-    background-color: lightgrey;
+    background-color: #555555;
+    color: white;
     width: 90px;
-    padding: 5px 10px;
+    padding: 5px 5px;
     font-size: 14px;
     float: right;
     border-radius: 12px;
 }
 
 .viewAll-button {
-    background-color: yellowgreen;
+    background-color: #008CBA;
+    color: white;
     width: 90px;
-    padding: 5px 10px;
+    padding: 5px 5px;
     font-size: 14px;
     float: left;
     border-radius: 12px;
 }
 
 .delete-button {
-    background-color: lightcoral;
+    background-color: #f44336;
+    color: white;
     width: 90px;
-    padding: 5px 10px;
+    padding: 5px 5px;
     font-size: 14px;
     float: right;
     border-radius: 12px;
@@ -98,4 +102,9 @@ p.flash {
     padding: 5px 10px;
     font-size: 18px;
     border-radius: 12px;
+}
+
+.new-deck-button {
+    background-color: #CCCCFF;
+    border: black;
 }
