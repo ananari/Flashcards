@@ -1,4 +1,4 @@
-div.deck-window {
+div.deck-window, div#timer-window {
     display: grid;
     grid-template-columns: auto auto auto auto;
     grid-gap: 20px;

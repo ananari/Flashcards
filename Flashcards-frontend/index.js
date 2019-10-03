@@ -4,6 +4,7 @@ const navigationBar = document.getElementById('navigation-bar');
 const myDecksButton = document.getElementById('my-decks-button')
 const myDecksWindow = document.getElementById('my-decks-window');
 const deckWindow = document.getElementById('deck-window')
+const timerWindow = $('#timer-window')[0];
 const cardWindow = document.querySelector('#card-window');
 const cardDiv = document.querySelector('#cards');
 const logIn = document.querySelector('#log-in');
@@ -20,6 +21,7 @@ const deckURL = id => `http://localhost:3000/decks/${id}`;
 const cardURL = id => `http://localhost:3000/cards/${id}`;
 let currentUser = {};
 const userURL = () => `http://localhost:3000/users/${currentUser.id}`;
+let countdown;
 
 createNavBar(); 
 
@@ -583,6 +585,13 @@ function clearFlash() {
     flash.innerText = "";
 }
 
+function clearTimerWindow() {
+    while (timerWindow.hasChildNodes() ) {  
+        timerWindow.removeChild(timerWindow.firstChild);
+    }
+    clearInterval(countdown);
+}
+
 function clearEverything() {
     clearMyDecksWindow();
     clearDeckWindow();
@@ -590,12 +599,55 @@ function clearEverything() {
     clearCardDiv();
     clearLoginForm();
     clearFlash();
+    clearTimerWindow(); 
 }
 
 //*******************************CARD FUNCTIONS********************************
 
+function createTimer(){
+    let isTimed = false;
+    let timer = document.createElement('button');
+    timer.innerText = "Start timer";
+    let timerMessage = document.createElement('p');
+    timerMessage.innerText = "Seconds left: "
+    let timerAmount = document.createElement('span');
+    timerMessage.appendChild(timerAmount);
+    clearTimerWindow();
+    timerWindow.appendChild(timer);
+    timer.addEventListener('click', function(){
+        isTimed = !(isTimed);
+        if(isTimed){
+            timer.innerText = "Stop timer";
+            timerWindow.appendChild(timerMessage);
+            timerAmount.innerText = 15;
+            let amt = parseInt(timerAmount.innerText);
+            let counts = 0;
+            countdown = setInterval(function(){
+                amt--;
+                // console.log(amt);
+                timerAmount.innerText = amt;
+                stopCounting();
+                }, 1000);
+            function stopCounting(){
+                counts++;
+                if(counts >= 15){
+                    alert("Time's up!")
+                    clearInterval(countdown);
+                }
+            }
+        }
+        else {
+            timer.innerText = "Start timer";
+            timerWindow.removeChild(timerMessage);
+            // console.log(countdown);
+            clearInterval(countdown);
+        }
+    })
+}
+
 function displayDeck(deckId){
     clearFlash();
+    clearInterval(countdown);
     fetch(deckURL(deckId))
     .then(res => res.json())
     .then(function(json){
@@ -697,6 +749,7 @@ function createCardWindow(deckId, index, cards){
     cardWindow.appendChild(deleteCard);
   
     nextCard.addEventListener('click', function(){
+        clearInterval(countdown);
         clearFlash();
         if((index < cards.length - 1)){
             clearCardDiv();
@@ -713,6 +766,7 @@ function createCardWindow(deckId, index, cards){
         }
     })
     newCard.addEventListener('click', function(){
+        clearInterval(countdown);
         clearFlash();
         $('#card-window form').remove();
         let form = document.createElement('form');
@@ -772,6 +826,7 @@ function createCardWindow(deckId, index, cards){
 
     })
     editCard.addEventListener('click', function(){
+        clearInterval(countdown);
         clearFlash(); 
         $('#card-window form').remove();
         let form = document.createElement('form');
@@ -834,8 +889,10 @@ function createCardWindow(deckId, index, cards){
       
     })
     deleteCard.addEventListener('click', function(){
+
         let result = confirm("Are you sure? You won't be able to undo this!")
         if(result){
+            clearInterval(countdown);
             let delconfig = {
                 method: "DELETE",
                 headers: {
@@ -861,6 +918,8 @@ function displayCard(obj){
     //add card-front css prop
     cardDiv.classList.remove("card-back");
     cardDiv.classList.add("card-front");
+
+    createTimer();
 
     //changed to if smoeone clicks on flashcard instead of p content
     cardDiv.addEventListener('click', function(){
@@ -891,6 +950,7 @@ function shuffleCards(cards){
     return newcards;
 
 }
+
 
 //**************************NAVBAR FUNCTIONS********************************/
 
