@@ -12,7 +12,7 @@ class SessionsController < ApplicationController
         if user
             render json: user
         else
-            no_user_found = {errors: "no user found"}
+            no_user_found = {errors: "User not found"}
             render json: no_user_found.to_json
         end
     end

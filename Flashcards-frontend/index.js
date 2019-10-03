@@ -86,12 +86,7 @@ function newSession(){
         .then(function(json){
             if(json.hasOwnProperty("errors")) {
                 console.log(json);
-                let errorMsg = "";
-                for(const j in json["errors"]){
-                    for(const k of json["errors"][j]){
-                        errorMsg += `${j} ${k} \n`
-                    }
-                }
+                let errorMsg = json["errors"];
                 flash.innerText = errorMsg;
             }
             else {
