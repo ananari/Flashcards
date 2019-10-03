@@ -249,7 +249,7 @@ function loadDecks(deckData) {
     newDeck.innerText = 'Create a New Deck with '
     const newDeckButton = document.createElement('button');
     newDeckButton.innerText = `Magic`;
-    newDeckButton.style.backgroundColor = "MediumOrchid";
+    newDeckButton.classList.add('new-deck-button')
     newDeck.appendChild(newDeckButton);
     
     //append to mydecksWindow
@@ -276,13 +276,13 @@ function displayDecks(deckData) {
         deckWindow.appendChild(newDiv);
         
         //add deck name
-        const deckName = document.createElement('h3');
+        const deckName = document.createElement('h2');
         deckName.innerText = `${deck.name}`;
         newDiv.appendChild(deckName);
 
         //add # of cards
         const deckCards = document.createElement('h4');
-        deckCards.innerText = `(contains ${deck.cards.length} cards)`;
+        deckCards.innerText = `${deck.cards.length} cards`;
         newDiv.appendChild(deckCards);
         
         //study deck button
