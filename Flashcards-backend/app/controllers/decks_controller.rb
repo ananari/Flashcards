@@ -17,19 +17,25 @@ class DecksController < ApplicationController
 
     def update
         deck = Deck.find(params[:id])
-        deck.update(deck_params)
-
-        #render full JSON deck data back for load decks function
-        decks = Deck.all
-        render json: decks
+        if deck.update(deck_params)
+          #render full JSON deck data back for load decks function
+          decks = Deck.all
+          render json: decks
+        else
+          render json: {errors: deck.errors}.to_json
+        end
     end
 
     def create
-        deck = Deck.create(deck_params)
-        
+        deck = Deck.new(deck_params)
         #render full JSON deck data back for load decks function
-        decks = Deck.all
-        render json: decks
+        if deck.save
+            decks = Deck.all
+            render json: decks
+        else
+        #render errors
+            render json: {errors: deck.errors}.to_json
+        end
     end
 
     def destroy
