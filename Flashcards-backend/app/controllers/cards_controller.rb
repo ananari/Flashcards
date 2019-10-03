@@ -19,7 +19,7 @@ class CardsController < ApplicationController
         if newcard.save
             render json: newcard
         else
-            render json: "no".to_json
+            render json: {errors: newcard.errors}.to_json
         end
             
     end
@@ -33,7 +33,7 @@ class CardsController < ApplicationController
         if card.update(card_params)
             render json: card
         else
-            render json: "no".to_json
+            render json: {errors: card.errors}.to_json
         end
     end
 

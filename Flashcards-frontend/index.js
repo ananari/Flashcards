@@ -470,8 +470,21 @@ function createDeck(newDeckNameValue, newDeckUserValue) {
     fetch(decksURL, newDeckObject)
         .then(response => response.json() )
         .then( (deckData) => {
-            fetchDecks(deckData);
-            flash.innerText = "Your deck has been successfully created.";
+            //console.log(deckData);
+            if(deckData.hasOwnProperty('errors')) {
+                let errorMsg = "";
+                for(const j in deckData["errors"]){
+                    for(const k of deckData["errors"][j]){
+                        errorMsg += `${j} ${k} \n`
+                    }
+                }
+                createDeckForm();
+                flash.innerText = errorMsg;
+            }
+            else {
+                fetchDecks(deckData);
+                flash.innerText = "Your deck has been successfully created.";
+            }
         })
         .catch(error => console.log(error));
 }
@@ -517,9 +530,21 @@ function editDeck(deck, editDeckNameValue, editDeckUserValue) {
     fetch(editDeckURL, editDeckObject)
         .then(response => response.json() )
         .then( (deckData) => {
-            // console.log("response from edit deck fxn: ",deckData)
-            fetchDecks(deckData);
-            flash.innerText = "Your deck has been successfully edited.";
+            console.log("response from edit deck fxn: ",deckData)
+            if(deckData.hasOwnProperty('errors')) {
+                let errorMsg = "";
+                for(const j in deckData["errors"]){
+                    for(const k of deckData["errors"][j]){
+                        errorMsg += `${j} ${k} \n`
+                    }
+                }
+                flash.innerText = errorMsg;
+                editDeckForm(deck);
+            }
+            else {
+                fetchDecks(deckData);
+                flash.innerText = "Your deck has been successfully edited.";
+            }
         })
         .catch(error => console.log(error));
 }
@@ -630,11 +655,22 @@ function displayDeck(deckId){
                     fetch(cardsURL, postconfig)
                     .then(res => res.json())
                     .then(function(json){
-                        cards.push(json); 
-                        displayCard(json);
-                        clearCardWindow();
-                        createCardWindow(deckId, index, cards);
-                        flash.innerText = "Your card has been successfully created."
+                        if(json.hasOwnProperty('errors')) {
+                            let errorMsg = "";
+                            for(const j in json["errors"]){
+                                for(const k of json["errors"][j]){
+                                    errorMsg += `${j} ${k} \n`
+                                }
+                            }
+                            flash.innerText = errorMsg;
+                        }
+                        else {
+                            cards.push(json); 
+                            displayCard(json);
+                            clearCardWindow();
+                            createCardWindow(deckId, index, cards);
+                            flash.innerText = "Your card has been successfully created."
+                        }
                     })
                     .catch(error => console.log(error));
                     
@@ -719,9 +755,20 @@ function createCardWindow(deckId, index, cards){
             fetch(cardsURL, postconfig)
             .then(res => res.json())
             .then(function(json){
-                cards.push(json); 
-                cardWindow.removeChild(form);
-                flash.innerText = "Your card has been successfully created.";
+                if(json.hasOwnProperty('errors')) {
+                    let errorMsg = "";
+                    for(const j in json["errors"]){
+                        for(const k of json["errors"][j]){
+                            errorMsg += `${j} ${k} \n`
+                        }
+                    }
+                    flash.innerText = errorMsg;
+                }
+                else {
+                    cards.push(json); 
+                    cardWindow.removeChild(form);
+                    flash.innerText = "Your card has been successfully created.";
+                }
             })
             .catch(error => console.log(error));
           
@@ -769,11 +816,22 @@ function createCardWindow(deckId, index, cards){
             fetch(cardURL(cards[index].id), patchconfig)
             .then(res => res.json())
             .then(function(json){
-                cards[index] = json; 
-                clearCardDiv();
-                cardWindow.removeChild(form);
-                displayCard(cards[index]);
-                flash.innerText = "Your card has been successfully edited."; 
+                if(json.hasOwnProperty('errors')) {
+                    let errorMsg = "";
+                    for(const j in json["errors"]){
+                        for(const k of json["errors"][j]){
+                            errorMsg += `${j} ${k} \n`
+                        }
+                    }
+                    flash.innerText = errorMsg;
+                }
+                else {
+                    cards[index] = json; 
+                    clearCardDiv();
+                    cardWindow.removeChild(form);
+                    displayCard(cards[index]);
+                    flash.innerText = "Your card has been successfully edited."; 
+                }
             })
             .catch(error => console.log(error));
       
